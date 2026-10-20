@@ -1,0 +1,8 @@
+post/
+post_*/
+nc/
+logs/
+*.rds
+*.nc
+.Rhistory
+.RData
