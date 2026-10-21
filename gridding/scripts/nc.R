@@ -149,7 +149,7 @@ nc_write <- function(year, domain, dir_grids = NULL, dir_nc = "nc",
   if (length(nmhc_evap) > 0) {
     evap_tag <- paste0(
       "_EVAPORATIVES_",
-      gsub("[^A-Za-z0-9]+", "_", toupper(evap_scenario))
+      gsub(" ", "_", toupper(evap_scenario))
     )
     nmhc_sel <- grep(evap_tag, nmhc_evap, value = TRUE, fixed = TRUE)
     if (length(nmhc_sel) == 0) {
