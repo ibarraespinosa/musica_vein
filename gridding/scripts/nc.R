@@ -31,6 +31,7 @@ source("scripts/wrf_grid.R", encoding = "UTF-8")
 
 nc_write <- function(year, domain, dir_grids = NULL, dir_nc = "nc",
                      wrfinput_dir = NULL, compression = 4,
+                     evap_scenario = "SSP 4.5",
                      g = NULL, verbose = TRUE) {
 
   # domain: "01", "1" or "d01" -> "01"
@@ -141,11 +142,30 @@ nc_write <- function(year, domain, dir_grids = NULL, dir_nc = "nc",
     species <- setdiff(species, "NMHC")
   }
 
-  nmhc_components <- grep("^NMHC_", species, value = TRUE)
-  if (length(nmhc_components) == 0) {
+  nmhc_all <- grep("^NMHC_", species, value = TRUE)
+  nmhc_evap <- grep("_EVAPORATIVES_", nmhc_all, value = TRUE)
+  nmhc_components <- nmhc_all
+
+  if (length(nmhc_evap) > 0) {
+    evap_tag <- paste0(
+      "_EVAPORATIVES_",
+      gsub("[^A-Za-z0-9]+", "_", toupper(evap_scenario))
+    )
+    nmhc_sel <- grep(evap_tag, nmhc_evap, value = TRUE, fixed = TRUE)
+    if (length(nmhc_sel) == 0) {
+      stop(
+        "No NMHC evaporative components match scenario '", evap_scenario,
+        "'. Available: ",
+        paste(sub("^.*_EVAPORATIVES_", "", nmhc_evap), collapse = ", ")
+      )
+    }
+    nmhc_components <- c(setdiff(nmhc_all, nmhc_evap), nmhc_sel)
+  }
+
+  if (length(nmhc_all) == 0) {
     warning("No NMHC_* columns found; NMHC will not be created")
   }
-  vars <- c(species, if (length(nmhc_components) > 0) "NMHC")
+  vars <- c(species, if (length(nmhc_all) > 0) "NMHC")
 
   if (verbose) {
     message("Species: ", paste(species, collapse = ", "))
@@ -325,6 +345,7 @@ nc_write <- function(year, domain, dir_grids = NULL, dir_nc = "nc",
     )
   )
   ncatt_put(nc, 0, "domain", paste0("d", dom))
+  ncatt_put(nc, 0, "evap_scenario", evap_scenario)
   ncatt_put(
     nc, 0, "units_comment",
     paste(

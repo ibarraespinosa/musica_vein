@@ -33,7 +33,8 @@ for (yy in years) {
       domain = dd,
       dir_grids = dir_grids,
       dir_nc = "nc",
-      wrfinput_dir = wrf_dir
+      wrfinput_dir = wrf_dir,
+      evap_scenario = evap_scenario
     )
     done <- c(done, f)
   }

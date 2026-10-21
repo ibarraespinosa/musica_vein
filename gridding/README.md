@@ -80,8 +80,11 @@ One NetCDF per year and domain, with 12 monthly records.
 
 - `time = 12`, monthly records with `time_bnds`
 - 18 species: `CO`, `HC`, `NOx`, `NO`, `NO2`, `NH3`, `PM2.5`, `SO2`,
-  `CO2`, `CH4`, `N2O`, `ETOH`, `PM10`, and the five `NMHC_*` components
-- `NMHC` = sum of the five `NMHC_*` components (not `HC`)
+  `CO2`, `CH4`, `N2O`, `ETOH`, `PM10`, and the `NMHC_*` components
+- `NMHC` = exhaust + the evaporative scenario selected by `evap_scenario`
+  in `config/paths.R` (default `"SSP 4.5"`). It is not `HC`.
+- All three SSP evaporative components are kept as separate `NMHC_*`
+  variables. They are alternatives: do not sum them together.
 - `cell_area` (km²)
 - `hours_in_month` and `days_in_month`
 
@@ -94,6 +97,9 @@ No hourly profile is applied. To obtain an hourly mean, divide by
 - NOx, NO and NO2 are distributed with `lengthHDV`, which gives weight only
   to primary/trunk/motorway roads, preserving the regional totals.
 - `PM` from the exhaust inventory is renamed to `PM2.5` before gridding.
+- The emissions files contain three alternative evaporative SSP scenarios
+  (`SSP 1.9`, `SSP 4.5`, `SSP 8.5`). They are not additive. `NMHC` uses only
+  `evap_scenario`; the other two remain as separate variables.
 - The grid is the regular lon/lat approximation built with
   `wrf_grid_sf()`; it uses `sf::st_make_grid()` because
   `eixport::wrf_grid()` overflows R's protection stack on the 300 x 444

@@ -20,3 +20,7 @@ wrf_dir <- "/path/to/wrfinputs"
 # wrfinput_d<domain> and post/grids_<domain>.
 years <- 2023:2025
 domains <- c("01", "02")
+
+# Evaporative scenario used for the NMHC total. All three SSP components
+# are kept as variables, but NMHC only adds the selected one.
+evap_scenario <- "SSP 4.5"
